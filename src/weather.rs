@@ -1,6 +1,8 @@
 use dotenv::{dotenv, var};
 use serde::{Deserialize, Serialize};
 
+const PRINT_WIDTH: usize = 70;
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Weather {
     pub location: WeatherLocation,
@@ -53,7 +55,19 @@ pub struct WeatherCondition {
     pub code: i64,
 }
 
+enum LineType {
+    Simple,
+    Double,
+}
+
+impl Default for Weather {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Weather {
+    /// Create a new Weather instance
     pub fn new() -> Self {
         Weather {
             location: WeatherLocation {
@@ -98,13 +112,26 @@ impl Weather {
         }
     }
 
+    /// Fetch the current weather for a given city
+    ///
+    /// # Arguments
+    ///
+    /// * `city` - A string slice that holds the name of the city
+    ///
+    /// # Returns
+    ///
+    /// A Result object with the Weather struct or an error
+    ///
+    /// # Errors
+    ///
+    /// If the request fails or the response cannot be deserialized
     pub async fn fetch_current_weather(
         &self,
         city: String,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         dotenv().ok();
         let url = &format!(
-            "http://api.weatherapi.com/v1/current.json?key={}&q={}",
+            "http://api.weatherapi.com/v1/current.json?key={}&q={}&aqi=no&lang=de",
             var("WEATHER_API").unwrap(),
             city
         );
@@ -115,27 +142,182 @@ impl Weather {
         Ok(data)
     }
 
+    /// Print the current weather information
+    ///
+    /// This method prints the current weather information in a formatted way
+    /// to the console
     pub fn print_current_weather(&self) {
-        println!("Current weather in {}\n", self.location.name);
-        println!("Temperature: {}°C", self.current.temp_c);
-        println!("Condition: {}", self.current.condition.text);
+        let width = PRINT_WIDTH;
 
-        if self.current.is_day == 1 {
-            println!("Daytime");
-        } else {
-            println!("Nighttime");
-        }
+        self.print_separator(width, 't');
+        self.print_line(
+            None,
+            format!("WETTERBERICHT FÜR {}", self.location.name.to_uppercase()),
+            width,
+            LineType::Simple,
+        );
+        self.print_separator(width, 'm');
+        self.print_line(
+            Some("Datum & Zeit"),
+            self.location.localtime.clone(),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Region"),
+            format!("{}, {}", self.location.region, self.location.country),
+            width,
+            LineType::Double,
+        );
+        self.print_separator(width, 'm');
+        self.print_line(
+            None,
+            "AKTUELLE BEDINGUNGEN".to_string(),
+            width,
+            LineType::Simple,
+        );
+        self.print_line(
+            Some("Status"),
+            self.current.condition.text.clone(),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Temperatur"),
+            format!(
+                "{:.1}°C ({:.1}°F)",
+                self.current.temp_c, self.current.temp_f
+            ),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Gefühlt wie"),
+            format!(
+                "{:.1}°C ({:.1}°F)",
+                self.current.feelslike_c, self.current.feelslike_f
+            ),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Tageszeit"),
+            if self.current.is_day == 1 {
+                "Tag"
+            } else {
+                "Nacht"
+            }
+            .to_string(),
+            width,
+            LineType::Double,
+        );
 
-        println!("Wind: {} kph", self.current.wind_kph);
+        self.print_separator(width, 'm');
+        self.print_line(None, "WEITERE DETAILS".to_string(), width, LineType::Simple);
+        self.print_line(
+            Some("Luftfeutigkeit"),
+            format!("{}%", self.current.humidity),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Bewölkung"),
+            format!("{}%", self.current.cloud),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Wind"),
+            format!(
+                "Wind: {:.1} km/h (Richtung: {})",
+                self.current.wind_kph, self.current.wind_dir
+            ),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Windböen"),
+            format!(
+                "{:.1} km/h ({:.1} mph)",
+                self.current.gust_kph, self.current.gust_mph
+            ),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Niederschlag"),
+            format!("{:.1} mm", self.current.precip_mm),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Luftdruck"),
+            format!("{:.1} mb", self.current.pressure_mb),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("Sichtweite"),
+            format!("{:.1} km", self.current.vis_km),
+            width,
+            LineType::Double,
+        );
+        self.print_line(
+            Some("UV-Index"),
+            format!("{:.1}", self.current.uv),
+            width,
+            LineType::Double,
+        );
 
-        if self.current.precip_mm > 0.0 {
-            println!("Precipitation: {} mm", self.current.precip_mm);
-        }
+        self.print_separator(width, 'm');
+        self.print_line(
+            Some("Letzte Aktualisierung"),
+            self.current.last_updated.clone(),
+            width,
+            LineType::Double,
+        );
+        self.print_separator(width, 'b');
+    }
 
-        println!("Humidity: {}%", self.current.humidity);
-        println!("Cloud cover: {}%", self.current.cloud);
-        println!("Feels like: {}°C", self.current.feelslike_c);
-        println!("Visibility: {} km", self.current.vis_km);
-        println!("UV index: {}", self.current.uv);
+    /// Print a line with a label and content
+    ///
+    /// # Arguments
+    ///
+    /// * `label` - An optional string slice that holds the label for the content
+    /// * `content` - A string slice that holds the content to print
+    /// * `width` - An integer that holds the width of the line
+    /// * `line_type` - A LineType enum that holds the type of line to print
+    fn print_line(&self, label: Option<&str>, content: String, width: usize, line_type: LineType) {
+        let formatted = match line_type {
+            LineType::Simple => format!("│ {}", content),
+            LineType::Double => format!("│ {}: {}", label.unwrap(), content),
+        };
+        let padding = width - formatted.chars().count();
+        println!("{}{} │", formatted, " ".repeat(padding));
+    }
+
+    /// Print a separator line
+    ///
+    /// # Arguments
+    ///
+    /// * `width` - An integer that holds the width of the separator
+    /// * `style` - A char that holds the style of the separator
+    fn print_separator(&self, width: usize, style: char) {
+        println!(
+            "{}{}{}",
+            match style {
+                't' => "┌",
+                'b' => "└",
+                'm' => "├",
+                _ => "├",
+            },
+            "─".repeat(width),
+            match style {
+                't' => "┐",
+                'b' => "┘",
+                'm' => "┤",
+                _ => "┤",
+            }
+        );
     }
 }
