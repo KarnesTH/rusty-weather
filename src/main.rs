@@ -1,11 +1,21 @@
 use clap::Parser;
-use rusty_weather::Cli;
+use rusty_weather::prelude::*;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let args = Cli::parse();
     match args.commands {
-        rusty_weather::Command::Current { city } => {
-            println!("Current weather for {}", city);
+        WeatherCommand::Current { city } => {
+            let weather = Weather::new();
+            let result = weather.fetch_current_weather(city).await;
+            match result {
+                Ok(weather) => {
+                    weather.print_current_weather();
+                }
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                }
+            }
         }
     }
 }
