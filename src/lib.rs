@@ -21,5 +21,8 @@ pub enum WeatherCommand {
         /// The city to get the weather for
         #[clap(short, long)]
         city: String,
+        /// The language to get the weather in
+        #[clap(short, long)]
+        lang: Option<String>,
     },
 }

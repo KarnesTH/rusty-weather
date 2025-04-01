@@ -5,9 +5,9 @@ use rusty_weather::prelude::*;
 async fn main() {
     let args = Cli::parse();
     match args.commands {
-        WeatherCommand::Current { city } => {
+        WeatherCommand::Current { city, lang } => {
             let weather = Weather::new();
-            let result = weather.fetch_current_weather(city).await;
+            let result = weather.get_current_weather(city, lang).await;
             match result {
                 Ok(weather) => {
                     weather.print_current_weather();

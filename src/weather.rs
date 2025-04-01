@@ -125,15 +125,17 @@ impl Weather {
     /// # Errors
     ///
     /// If the request fails or the response cannot be deserialized
-    pub async fn fetch_current_weather(
+    pub async fn get_current_weather(
         &self,
         city: String,
+        lang: Option<String>,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         dotenv().ok();
         let url = &format!(
-            "http://api.weatherapi.com/v1/current.json?key={}&q={}&aqi=no&lang=de",
+            "http://api.weatherapi.com/v1/current.json?key={}&q={}&aqi=no&lang=d{}",
             var("WEATHER_API").unwrap(),
-            city
+            city,
+            lang.unwrap_or("de".to_string())
         );
 
         let resp = reqwest::get(url).await;
@@ -176,6 +178,7 @@ impl Weather {
             width,
             LineType::Simple,
         );
+        self.print_separator(width, 'm');
         self.print_line(
             Some("Status"),
             self.current.condition.text.clone(),
@@ -214,6 +217,7 @@ impl Weather {
 
         self.print_separator(width, 'm');
         self.print_line(None, "WEITERE DETAILS".to_string(), width, LineType::Simple);
+        self.print_separator(width, 'm');
         self.print_line(
             Some("Luftfeutigkeit"),
             format!("{}%", self.current.humidity),
