@@ -208,6 +208,7 @@ impl Weather {
             width,
             LineType::Double,
         );
+        // TODO: Create a better way to handle the daytime
         self.print_line(
             "current.daytime",
             &[(
