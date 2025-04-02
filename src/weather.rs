@@ -1,4 +1,5 @@
 use dotenv::{dotenv, var};
+use lingua_i18n_rs::prelude::Lingua;
 use serde::{Deserialize, Serialize};
 
 const PRINT_WIDTH: usize = 70;
@@ -132,7 +133,7 @@ impl Weather {
     ) -> Result<Self, Box<dyn std::error::Error>> {
         dotenv().ok();
         let url = &format!(
-            "http://api.weatherapi.com/v1/current.json?key={}&q={}&aqi=no&lang=d{}",
+            "http://api.weatherapi.com/v1/current.json?key={}&q={}&aqi=no&lang={}",
             var("WEATHER_API").unwrap(),
             city,
             lang.unwrap_or("de".to_string())
@@ -153,148 +154,152 @@ impl Weather {
 
         self.print_separator(width, 't');
         self.print_line(
-            None,
-            format!("WETTERBERICHT FÜR {}", self.location.name.to_uppercase()),
+            "current.weather_report",
+            &[("city", self.location.name.as_str())],
             width,
             LineType::Simple,
         );
         self.print_separator(width, 'm');
         self.print_line(
-            Some("Datum & Zeit"),
-            self.location.localtime.clone(),
+            "current.date",
+            &[("date", self.location.localtime.as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Region"),
-            format!("{}, {}", self.location.region, self.location.country),
+            "current.region",
+            &[
+                ("region", self.location.region.as_str()),
+                ("country", self.location.country.as_str()),
+            ],
             width,
             LineType::Double,
         );
         self.print_separator(width, 'm');
-        self.print_line(
-            None,
-            "AKTUELLE BEDINGUNGEN".to_string(),
-            width,
-            LineType::Simple,
-        );
+        self.print_line("current.current_conditions", &[], width, LineType::Simple);
         self.print_separator(width, 'm');
         self.print_line(
-            Some("Status"),
-            self.current.condition.text.clone(),
+            "current.status",
+            &[("status", self.current.condition.text.as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Temperatur"),
-            format!(
-                "{:.1}°C ({:.1}°F)",
-                self.current.temp_c, self.current.temp_f
-            ),
+            "current.temperature",
+            &[
+                ("temperature_c", self.current.temp_c.to_string().as_str()),
+                ("temperature_f", self.current.temp_f.to_string().as_str()),
+            ],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Gefühlt wie"),
-            format!(
-                "{:.1}°C ({:.1}°F)",
-                self.current.feelslike_c, self.current.feelslike_f
-            ),
+            "current.feels_like",
+            &[
+                (
+                    "feels_like_c",
+                    self.current.feelslike_c.to_string().as_str(),
+                ),
+                (
+                    "feels_like_f",
+                    self.current.feelslike_f.to_string().as_str(),
+                ),
+            ],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Tageszeit"),
-            if self.current.is_day == 1 {
-                "Tag"
-            } else {
-                "Nacht"
-            }
-            .to_string(),
+            "current.daytime",
+            &[(
+                "daytime",
+                if self.current.is_day == 1 {
+                    "day"
+                } else {
+                    "night"
+                },
+            )],
             width,
             LineType::Double,
         );
 
         self.print_separator(width, 'm');
-        self.print_line(None, "WEITERE DETAILS".to_string(), width, LineType::Simple);
+        self.print_line("current.more_details", &[], width, LineType::Simple);
         self.print_separator(width, 'm');
         self.print_line(
-            Some("Luftfeutigkeit"),
-            format!("{}%", self.current.humidity),
+            "current.humidity",
+            &[("humidity", self.current.humidity.to_string().as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Bewölkung"),
-            format!("{}%", self.current.cloud),
+            "current.cloudiness",
+            &[("cloudiness", self.current.cloud.to_string().as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Wind"),
-            format!(
-                "Wind: {:.1} km/h (Richtung: {})",
-                self.current.wind_kph, self.current.wind_dir
-            ),
+            "current.wind",
+            &[
+                ("wind_speed", self.current.wind_kph.to_string().as_str()),
+                ("wind_direction", self.current.wind_dir.as_str()),
+            ],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Windböen"),
-            format!(
-                "{:.1} km/h ({:.1} mph)",
-                self.current.gust_kph, self.current.gust_mph
-            ),
+            "current.gusts",
+            &[
+                ("wind_gusts", self.current.gust_kph.to_string().as_str()),
+                ("gusts_mph", self.current.gust_mph.to_string().as_str()),
+            ],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Niederschlag"),
-            format!("{:.1} mm", self.current.precip_mm),
+            "current.precipitation",
+            &[("precipitation", self.current.precip_mm.to_string().as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Luftdruck"),
-            format!("{:.1} mb", self.current.pressure_mb),
+            "current.pressure",
+            &[("pressure", self.current.pressure_mb.to_string().as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("Sichtweite"),
-            format!("{:.1} km", self.current.vis_km),
+            "current.visibility",
+            &[("visibility", self.current.vis_km.to_string().as_str())],
             width,
             LineType::Double,
         );
         self.print_line(
-            Some("UV-Index"),
-            format!("{:.1}", self.current.uv),
+            "current.uv_index",
+            &[("uv_index", self.current.uv.to_string().as_str())],
             width,
             LineType::Double,
         );
 
         self.print_separator(width, 'm');
         self.print_line(
-            Some("Letzte Aktualisierung"),
-            self.current.last_updated.clone(),
+            "current.last_updated",
+            &[("last_updated", self.current.last_updated.as_str())],
             width,
             LineType::Double,
         );
         self.print_separator(width, 'b');
     }
 
-    /// Print a line with a label and content
+    /// Helper method to print a line
     ///
     /// # Arguments
     ///
-    /// * `label` - An optional string slice that holds the label for the content
-    /// * `content` - A string slice that holds the content to print
-    /// * `width` - An integer that holds the width of the line
-    /// * `line_type` - A LineType enum that holds the type of line to print
-    fn print_line(&self, label: Option<&str>, content: String, width: usize, line_type: LineType) {
+    /// * `key` - A string slice that holds the key for the translation
+    /// * `content` - A slice of tuples that holds the content for the translation
+    fn print_line(&self, key: &str, content: &[(&str, &str)], width: usize, line_type: LineType) {
         let formatted = match line_type {
-            LineType::Simple => format!("│ {}", content),
-            LineType::Double => format!("│ {}: {}", label.unwrap(), content),
+            LineType::Simple => format!("│ {}", Lingua::t(key, content).unwrap().to_uppercase()),
+            LineType::Double => format!("│ {}", Lingua::t(key, content).unwrap()),
         };
         let padding = width - formatted.chars().count();
         println!("{}{} │", formatted, " ".repeat(padding));

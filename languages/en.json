@@ -1,0 +1,22 @@
+{
+  "current": {
+    "weather_report": "Weather report for {{city}}",
+    "date": "Date and time: {{date}}",
+    "region": "Region: {{region}}, {{country}}",
+    "current_conditions": "Current conditions",
+    "status": "Status: {{status}}",
+    "temperature": "Temperature: {{temperature_c}}°C ({{temperature_f}}°F)",
+    "feels_like": "Feels like: {{feels_like_c}}°C ({{feels_like_f}}°F)",
+    "daytime": "Daytime: {{daytime}}",
+    "more_details": "More details",
+    "humidity": "Humidity: {{humidity}}%",
+    "cloudiness": "Cloudiness: {{cloudiness}}%",
+    "wind": "Wind: {{wind_speed}} km/h, (Direction: {{wind_direction}})",
+    "gusts": "Gusts: {{wind_gusts}} km/h ({{gusts_mph}} mph)",
+    "precipitation": "Precipitation: {{precipitation}} mm",
+    "pressure": "Pressure: {{pressure}} mb",
+    "visibility": "Visibility: {{visibility}} km",
+    "uv_index": "UV index: {{uv_index}}",
+    "last_updated": "Last updated: {{last_updated}}"
+  }
+}
