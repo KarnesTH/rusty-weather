@@ -8,6 +8,7 @@ const PRINT_WIDTH: usize = 70;
 pub struct Weather {
     pub location: WeatherLocation,
     pub current: WeatherCurrent,
+    pub forecast: Option<WeatherForecast>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -56,9 +57,95 @@ pub struct WeatherCondition {
     pub code: i64,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct WeatherForecast {
+    pub forecastday: Vec<ForecastDay>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ForecastDay {
+    pub date: String,
+    pub day: Day,
+    pub astro: Astro,
+    pub hour: Vec<Hour>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Day {
+    pub maxtemp_c: f64,
+    pub maxtemp_f: f64,
+    pub mintemp_c: f64,
+    pub mintemp_f: f64,
+    pub avgtemp_c: f64,
+    pub avgtemp_f: f64,
+    pub maxwind_mph: f64,
+    pub maxwind_kph: f64,
+    pub totalprecip_mm: f64,
+    pub totalprecip_in: f64,
+    pub totalsnow_cm: f64,
+    pub avgvis_km: f64,
+    pub avgvis_miles: f64,
+    pub avghumidity: i64,
+    pub daily_will_it_rain: i64,
+    pub daily_chance_of_rain: i64,
+    pub daily_will_it_snow: i64,
+    pub daily_chance_of_snow: i64,
+    pub condition: WeatherCondition,
+    pub uv: f64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Astro {
+    pub sunrise: String,
+    pub sunset: String,
+    pub moonrise: String,
+    pub moonset: String,
+    pub moon_phase: String,
+    pub moon_illumination: i64,
+    pub is_moon_up: i64,
+    pub is_sun_up: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Hour {
+    pub time: String,
+    pub temp_c: f64,
+    pub temp_f: f64,
+    pub is_day: i64,
+    pub condition: WeatherCondition,
+    pub wind_mph: f64,
+    pub wind_kph: f64,
+    pub wind_degree: i64,
+    pub wind_dir: String,
+    pub pressure_mb: f64,
+    pub pressure_in: f64,
+    pub precip_mm: f64,
+    pub precip_in: f64,
+    pub snow_cm: f64,
+    pub humidity: i64,
+    pub cloud: i64,
+    pub feelslike_c: f64,
+    pub feelslike_f: f64,
+    pub windchill_c: f64,
+    pub windchill_f: f64,
+    pub heatindex_c: f64,
+    pub heatindex_f: f64,
+    pub dewpoint_c: f64,
+    pub dewpoint_f: f64,
+    pub will_it_rain: i64,
+    pub chance_of_rain: i64,
+    pub will_it_snow: i64,
+    pub chance_of_snow: i64,
+    pub vis_km: f64,
+    pub vis_miles: f64,
+    pub gust_mph: f64,
+    pub gust_kph: f64,
+    pub uv: i64,
+}
+
 enum LineType {
-    Simple,
-    Double,
+    Header,
+    Text,
 }
 
 impl Default for Weather {
@@ -110,6 +197,7 @@ impl Weather {
                 gust_mph: 0.0,
                 gust_kph: 0.0,
             },
+            forecast: None,
         }
     }
 
@@ -157,14 +245,14 @@ impl Weather {
             "current.weather_report",
             &[("city", self.location.name.as_str())],
             width,
-            LineType::Simple,
+            LineType::Header,
         );
         self.print_separator(width, 'm');
         self.print_line(
             "current.date",
             &[("date", self.location.localtime.as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.region",
@@ -173,16 +261,16 @@ impl Weather {
                 ("country", self.location.country.as_str()),
             ],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_separator(width, 'm');
-        self.print_line("current.current_conditions", &[], width, LineType::Simple);
+        self.print_line("current.current_conditions", &[], width, LineType::Header);
         self.print_separator(width, 'm');
         self.print_line(
             "current.status",
             &[("status", self.current.condition.text.as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.temperature",
@@ -191,7 +279,7 @@ impl Weather {
                 ("temperature_f", self.current.temp_f.to_string().as_str()),
             ],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.feels_like",
@@ -206,7 +294,7 @@ impl Weather {
                 ),
             ],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         // TODO: Create a better way to handle the daytime
         self.print_line(
@@ -220,23 +308,23 @@ impl Weather {
                 },
             )],
             width,
-            LineType::Double,
+            LineType::Text,
         );
 
         self.print_separator(width, 'm');
-        self.print_line("current.more_details", &[], width, LineType::Simple);
+        self.print_line("current.more_details", &[], width, LineType::Header);
         self.print_separator(width, 'm');
         self.print_line(
             "current.humidity",
             &[("humidity", self.current.humidity.to_string().as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.cloudiness",
             &[("cloudiness", self.current.cloud.to_string().as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.wind",
@@ -245,7 +333,7 @@ impl Weather {
                 ("wind_direction", self.current.wind_dir.as_str()),
             ],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.gusts",
@@ -254,31 +342,31 @@ impl Weather {
                 ("gusts_mph", self.current.gust_mph.to_string().as_str()),
             ],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.precipitation",
             &[("precipitation", self.current.precip_mm.to_string().as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.pressure",
             &[("pressure", self.current.pressure_mb.to_string().as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.visibility",
             &[("visibility", self.current.vis_km.to_string().as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_line(
             "current.uv_index",
             &[("uv_index", self.current.uv.to_string().as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
 
         self.print_separator(width, 'm');
@@ -286,7 +374,7 @@ impl Weather {
             "current.last_updated",
             &[("last_updated", self.current.last_updated.as_str())],
             width,
-            LineType::Double,
+            LineType::Text,
         );
         self.print_separator(width, 'b');
     }
@@ -299,8 +387,8 @@ impl Weather {
     /// * `content` - A slice of tuples that holds the content for the translation
     fn print_line(&self, key: &str, content: &[(&str, &str)], width: usize, line_type: LineType) {
         let formatted = match line_type {
-            LineType::Simple => format!("│ {}", Lingua::t(key, content).unwrap().to_uppercase()),
-            LineType::Double => format!("│ {}", Lingua::t(key, content).unwrap()),
+            LineType::Header => format!("│ {}", Lingua::t(key, content).unwrap().to_uppercase()),
+            LineType::Text => format!("│ {}", Lingua::t(key, content).unwrap()),
         };
         let padding = width - formatted.chars().count();
         println!("{}{} │", formatted, " ".repeat(padding));
