@@ -129,14 +129,14 @@ impl Weather {
     pub async fn get_current_weather(
         &self,
         city: String,
-        lang: Option<String>,
+        lang: String,
     ) -> Result<Self, Box<dyn std::error::Error>> {
         dotenv().ok();
         let url = &format!(
             "http://api.weatherapi.com/v1/current.json?key={}&q={}&aqi=no&lang={}",
             var("WEATHER_API").unwrap(),
             city,
-            lang.unwrap_or("de".to_string())
+            lang
         );
 
         let resp = reqwest::get(url).await;

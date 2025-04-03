@@ -18,5 +18,11 @@
     "visibility": "Visibility: {{visibility}} km",
     "uv_index": "UV index: {{uv_index}}",
     "last_updated": "Last updated: {{last_updated}}"
+  },
+  "language": {
+    "set_language_ok": "Language successfully set to: {{lang}}",
+    "set_language_error": "Language not available: {{lang}}",
+    "list_languages": "Available languages:",
+    "current_language": "Current language: {{lang}}"
   }
 }

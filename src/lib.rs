@@ -1,6 +1,8 @@
+mod utils;
 mod weather;
 
 pub mod prelude {
+    pub use crate::utils::*;
     pub use crate::weather::Weather;
     pub use crate::{Cli, WeatherCommand};
 }
@@ -21,8 +23,24 @@ pub enum WeatherCommand {
         /// The city to get the weather for
         #[clap(short, long)]
         city: String,
-        /// The language to get the weather in
-        #[clap(short, long)]
-        lang: Option<String>,
     },
+    /// Configure the language for the weather app
+    Language {
+        #[clap(subcommand)]
+        commands: LanguageCommand,
+    },
+}
+
+#[derive(Parser)]
+pub enum LanguageCommand {
+    /// Set the language for the weather app
+    Set {
+        /// The language to set
+        #[clap(short, long)]
+        lang: String,
+    },
+    /// List the available languages
+    List,
+    /// Get the current language
+    Get,
 }
