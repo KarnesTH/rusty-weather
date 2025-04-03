@@ -19,6 +19,28 @@
     "uv_index": "UV index: {{uv_index}}",
     "last_updated": "Last updated: {{last_updated}}"
   },
+  "forecast": {
+    "forecast": "Weather forecast for {{city}}",
+    "date": "Date and time: {{date}}",
+    "day_forecast": "Forecast for {{date}}",
+    "temperature_range": "Temperature: {{min_temp_c}}°C to {{max_temp_c}}°C",
+    "avg_temperature": "Average temperature: {{avg_temp_c}}°C",
+    "condition": "Condition: {{condition}}",
+    "precipitation": "Precipitation: {{precipitation}} mm",
+    "chance_of_rain": "Chance of rain: {{rain_chance}}%",
+    "chance_of_snow": "Chance of snow: {{snow_chance}}%",
+    "wind": "Max wind speed: {{wind_kph}} km/h",
+    "humidity": "Average humidity: {{humidity}}%",
+    "uv_index": "UV index: {{uv}}",
+    "sunrise": "Sunrise: {{sunrise}}",
+    "sunset": "Sunset: {{sunset}}",
+    "hourly_forecast": "Hourly forecast",
+    "hour": "Time: {{time}}",
+    "hour_temp": "Temperature: {{temp_c}}°C",
+    "hour_condition": "Condition: {{condition}}",
+    "hour_precipitation": "Precipitation: {{precip_mm}} mm",
+    "hour_wind": "Wind: {{wind_kph}} km/h ({{wind_dir}})"
+  },
   "language": {
     "set_language_ok": "Language successfully set to: {{lang}}",
     "set_language_error": "Language not available: {{lang}}",

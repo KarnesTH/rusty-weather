@@ -3,7 +3,7 @@ mod weather;
 
 pub mod prelude {
     pub use crate::utils::*;
-    pub use crate::weather::Weather;
+    pub use crate::weather::{ForecastWeather, Weather};
     pub use crate::{Cli, WeatherCommand};
 }
 
@@ -23,6 +23,15 @@ pub enum WeatherCommand {
         /// The city to get the weather for
         #[clap(short, long)]
         city: String,
+    },
+    /// Get the forcast weather for a city and days
+    Forecast {
+        /// The city to get the weather for
+        #[clap(short, long)]
+        city: String,
+        /// The days to get the weather for
+        #[clap(short, long)]
+        days: usize,
     },
     /// Configure the language for the weather app
     Language {

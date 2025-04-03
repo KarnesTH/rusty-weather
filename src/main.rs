@@ -27,6 +27,19 @@ async fn main() {
                 }
             }
         }
+        WeatherCommand::Forecast { city, days } => {
+            let lang = Lingua::get_language().unwrap();
+            let weather = ForecastWeather::new();
+            let result = weather.get_forecast_weather(days, city, lang).await;
+            match result {
+                Ok(weather) => {
+                    weather.print_forecast_weather();
+                }
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                }
+            }
+        }
         WeatherCommand::Language { commands } => match commands {
             LanguageCommand::Set { lang } => {
                 if let Ok(is_set_lang) = Lingua::set_language(lang.as_str()) {
