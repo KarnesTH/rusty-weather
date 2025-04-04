@@ -2,7 +2,7 @@ use std::path::Path;
 
 use clap::Parser;
 use lingua_i18n_rs::prelude::Lingua;
-use rusty_weather::{LanguageCommand, prelude::*};
+use rusty_weather::prelude::*;
 
 #[tokio::main]
 async fn main() {

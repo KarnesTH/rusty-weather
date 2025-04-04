@@ -4,7 +4,7 @@ mod weather;
 pub mod prelude {
     pub use crate::utils::*;
     pub use crate::weather::{ForecastWeather, Weather};
-    pub use crate::{Cli, WeatherCommand};
+    pub use crate::{Cli, LanguageCommand, WeatherCommand};
 }
 
 use clap::Parser;
