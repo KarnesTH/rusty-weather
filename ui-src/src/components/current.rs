@@ -19,13 +19,13 @@ pub fn CurrentWeather() -> impl IntoView {
                 </form>
             </div>
 
-            <div class="bg-background-card rounded-lg shadow-lg overflow-hidden">
+            <div class="bg-background-card rounded-lg shadow-lg">
                 <div class="bg-gradient-primary text-white p-6">
                     <h2 class="text-2xl font-bold">"Wetterbericht"</h2>
                     <p class="text-white opacity-80">"Wählen Sie eine Stadt, um das Wetter anzuzeigen"</p>
                 </div>
 
-                <div class="p-6">
+                <div class="p-6 h-full overflow-y-auto">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="bg-background p-4 rounded-lg border border-primary-400">
                             <h3 class="text-sm text-primary-200 uppercase font-semibold mb-2">

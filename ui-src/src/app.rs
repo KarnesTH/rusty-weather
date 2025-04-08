@@ -5,32 +5,37 @@ use leptos_router::path;
 use crate::components::CurrentWeather;
 use crate::components::ForecastWeather;
 
+#[derive(Clone, Copy, PartialEq)]
+enum WeatherPage {
+    Current,
+    Forecast,
+}
+
 #[component]
 pub fn App() -> impl IntoView {
-    let (is_active, set_is_active) = signal(false);
-
-    let nav_style = move || {
-        if is_active.get() {
-            "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-primary-100 text-gray-400 hover:text-gray-300 hover:border-gray-600".to_string()
-        } else {
-            "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600".to_string()
-        }
-    };
+    let (current_page, set_current_page) = signal(WeatherPage::Current);
 
     view! {
         <Router>
             <div class="min-h-screen bg-background text-white p-4">
                 <header class="max-w-4xl mx-auto mb-8 text-center">
-                    <h1 class="text-3xl md:text-4xl font-bold text-primary-100 mb-2">
+                    <h1 class="text-7xl md:text-4xl font-bold text-primary-100 mb-2">
                         "Rusty Weather"
                     </h1>
                     <p class="text-lg text-gray-400">
-                        "Ihr zuverlässiger Wetterdienst"
+                        "Dein persönlicher Wetterdienst für aktuelles und vorhergesagtes Wetter"
                     </p>
                     <nav class="flex justify-center gap-4 mt-4">
                         <A href="/">
                             <span
-                                class=move || nav_style
+                                class=move ||format!("inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium text-gray-400 hover:text-gray-300 hover:border-gray-600 {}", if current_page.get() == WeatherPage::Current {
+                                    "border-primary-100"
+                                } else {
+                                    "border-transparent"
+                                })
+                                on:click=move |_| {
+                                    set_current_page.set(WeatherPage::Current);
+                                }
                             >
                                 "Aktuelles Wetter"
                             </span>
@@ -38,7 +43,14 @@ pub fn App() -> impl IntoView {
 
                         <A href="/forecast">
                             <span
-                                class=move || nav_style
+                                class=move || format!("inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium text-gray-400 hover:text-gray-300 hover:border-gray-600 {}", if current_page.get() == WeatherPage::Forecast {
+                                    "border-primary-100"
+                                } else {
+                                    "border-transparent"
+                                })
+                                on:click=move |_| {
+                                    set_current_page.set(WeatherPage::Forecast);
+                                }
                             >
                                 "Wettervorhersage"
                             </span>
