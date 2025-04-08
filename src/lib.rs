@@ -38,6 +38,14 @@ pub enum WeatherCommand {
         #[clap(subcommand)]
         commands: LanguageCommand,
     },
+    /// Start a web server to serve the weather app
+    Web {
+        /// The port to start the web server on
+        #[clap(short, long)]
+        port: u16,
+    },
+    /// Start a api server to serve the weather app
+    Serve,
 }
 
 #[derive(Parser)]

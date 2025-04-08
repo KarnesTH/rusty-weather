@@ -74,5 +74,11 @@ async fn main() {
                 );
             }
         },
+        WeatherCommand::Web { port } => {
+            start_web_server(port).await.unwrap();
+        }
+        WeatherCommand::Serve => {
+            start_server().await.unwrap();
+        }
     }
 }
