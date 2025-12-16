@@ -5,10 +5,10 @@ use lingua_i18n_rs::prelude::Lingua;
 use rusty_weather::prelude::*;
 
 #[tokio::main]
-async fn main() {
-    Lingua::new("languages").init().unwrap();
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    Lingua::new("languages").init()?;
 
-    let language = Lingua::load_lang_from_config(Path::new("config.ini"), "language").unwrap();
+    let language = Lingua::load_lang_from_config(Path::new("config.ini"), "language").expect("Failed to load language");
 
     Lingua::set_language(language.as_str()).unwrap();
 
@@ -74,11 +74,7 @@ async fn main() {
                 );
             }
         },
-        WeatherCommand::Web { port } => {
-            start_web_server(port).await.unwrap();
-        }
-        WeatherCommand::Serve => {
-            start_server().await.unwrap();
-        }
     }
+
+    Ok(())
 }

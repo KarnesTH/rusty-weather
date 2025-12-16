@@ -1,9 +1,0 @@
-[build]
-target = "./index.html"
-
-[watch]
-ignore = ["../src"]
-
-[serve]
-port = 3000
-open = false

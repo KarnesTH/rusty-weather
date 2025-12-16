@@ -9,8 +9,12 @@ pub mod prelude {
 
 use clap::Parser;
 
-/// A CLI weather app to get weather information for a given city
 #[derive(Parser)]
+#[clap(
+    version,
+    about = "A CLI weather app to get weather information for a given city",
+    author = "KarnesTH"
+)]
 pub struct Cli {
     #[clap(subcommand)]
     pub commands: WeatherCommand,
@@ -18,46 +22,34 @@ pub struct Cli {
 
 #[derive(Parser)]
 pub enum WeatherCommand {
-    /// Get the current weather for a city
+    #[clap(about = "Get the current weather for a city")]
     Current {
-        /// The city to get the weather for
-        #[clap(short, long)]
+        #[clap(short, long, help = "The city to get the weather for")]
         city: String,
     },
-    /// Get the forcast weather for a city and days
+    #[clap(about = "Get the forcast weather for a city and days")]
     Forecast {
-        /// The city to get the weather for
-        #[clap(short, long)]
+        #[clap(short, long, help = "The city to get the weather for")]
         city: String,
-        /// The days to get the weather for
-        #[clap(short, long)]
+        #[clap(short, long, help = "The days to get the weather for")]
         days: usize,
     },
-    /// Configure the language for the weather app
+    #[clap(about = "Configure the language for the weather app")]
     Language {
         #[clap(subcommand)]
         commands: LanguageCommand,
-    },
-    /// Start a web server to serve the weather app
-    Web {
-        /// The port to start the web server on
-        #[clap(short, long)]
-        port: u16,
-    },
-    /// Start a api server to serve the weather app
-    Serve,
+    }
 }
 
 #[derive(Parser)]
 pub enum LanguageCommand {
-    /// Set the language for the weather app
+    #[clap(about = "Set the language for the weather app")]
     Set {
-        /// The language to set
-        #[clap(short, long)]
+        #[clap(short, long, help = "The language to set")]
         lang: String,
     },
-    /// List the available languages
+    #[clap(about = "List the available languages")]
     List,
-    /// Get the current language
+    #[clap(about = "Get the current language")]
     Get,
 }
