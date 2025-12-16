@@ -14,7 +14,6 @@ async fn index() -> Html<String> {
 }
 
 async fn get_current_weather(Path(city): Path<String>) -> Json<Weather> {
-    Lingua::init_with_dir("languages").unwrap();
     let lang = Lingua::get_language().unwrap();
     let weather = Weather::new();
     let result = weather.get_current_weather(city, lang).await.unwrap();
@@ -22,10 +21,8 @@ async fn get_current_weather(Path(city): Path<String>) -> Json<Weather> {
 }
 
 async fn get_forecast_weather(
-    Path(city): Path<String>,
-    Path(days): Path<usize>,
+    Path((city, days)): Path<(String, usize)>,
 ) -> Json<ForecastWeather> {
-    Lingua::init_with_dir("languages").unwrap();
     let lang = Lingua::get_language().unwrap();
     let weather = ForecastWeather::new();
     let result = weather
@@ -35,7 +32,7 @@ async fn get_forecast_weather(
     Json(result)
 }
 
-pub async fn start_web_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn start_web_server(port: u16) -> Result<(), Box<dyn std::error::Error>> {    
     let dist_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("ui-src/dist");
 
     let cors = CorsLayer::new()
@@ -58,7 +55,7 @@ pub async fn start_web_server(port: u16) -> Result<(), Box<dyn std::error::Error
     Ok(())
 }
 
-pub async fn start_server() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn start_server() -> Result<(), Box<dyn std::error::Error>> {    
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(http::Method::GET)

@@ -1,6 +1,9 @@
+use leptos::logging::{log};
 use leptos::prelude::*;
+use leptos::task::spawn_local;
 use leptos_router::components::*;
 use leptos_router::path;
+use lingua_i18n_rs::prelude::Lingua;
 
 use crate::components::CurrentWeather;
 use crate::components::ForecastWeather;
@@ -15,6 +18,13 @@ enum WeatherPage {
 pub fn App() -> impl IntoView {
     let (current_page, set_current_page) = signal(WeatherPage::Current);
 
+    spawn_local(async move {
+        match Lingua::new("languages").init().await {
+            Ok(_) => log!("Language initialization successful"),
+            Err(err) => log!("Language initialization failed: {}", err),
+        }
+    });
+
     view! {
         <Router>
             <div class="min-h-screen bg-background text-white p-4">
@@ -23,7 +33,7 @@ pub fn App() -> impl IntoView {
                         "Rusty Weather"
                     </h1>
                     <p class="text-lg text-gray-400">
-                        "Dein persönlicher Wetterdienst für aktuelles und vorhergesagtes Wetter"
+                        "BlaBla Car"
                     </p>
                     <nav class="flex justify-center gap-4 mt-4">
                         <A href="/">

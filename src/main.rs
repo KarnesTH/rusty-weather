@@ -6,7 +6,7 @@ use rusty_weather::prelude::*;
 
 #[tokio::main]
 async fn main() {
-    Lingua::init_with_dir("languages").unwrap();
+    Lingua::new("languages").init().unwrap();
 
     let language = Lingua::load_lang_from_config(Path::new("config.ini"), "language").unwrap();
 
